@@ -1,0 +1,20 @@
+services:
+  api:
+    build: .
+    image: workshop-agentic-rag:local
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      MODEL_PROVIDER: ${MODEL_PROVIDER:-mock}
+      MODEL_NAME: ${MODEL_NAME:-gpt-4.1-mini}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      QDRANT_PATH: /app/qdrant_storage
+      SESSION_DB_PATH: /app/data/sessions.sqlite3
+    volumes:
+      - qdrant_data:/app/qdrant_storage
+      - session_data:/app/data
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
+  session_data:

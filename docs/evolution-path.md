@@ -1,32 +1,7 @@
-# Workflow Evolution Path
+# Repository evolution path
 
-This starter begins with a small set of repository-owned documents. Add tools in stages and keep one source of truth for each rule.
+1. **Apply the Agentic RAG starter.** The API, tests, Docker files, sample profiles, and local/remote CI are the current work.
+2. **Verify the gates.** Require local Python CI to pass, GitHub Actions to pass on a pull request, a Docker image build, and black-box API smoke tests against the container.
+3. **Add Superpowers later through a separate PRD.** Do not install it during the current baseline work. Keep GitHub Spec Kit artifacts authoritative for product requirements; use Superpowers as the implementation and verification discipline only after its scope and cross-agent invocation are agreed.
 
-## Stage 0 — Starter spec pack
-- Agree the constitution and agent guidance.
-- Complete prompt requirements and the feature spec.
-- Review the plan and acceptance criteria before implementation.
-- Commit a baseline so later generated changes are easy to inspect.
-
-## Stage 1 — GitHub Spec Kit
-Use the [official Spec Kit docs](https://github.github.com/spec-kit/) for current installation and agent integration. Spec Kit can scaffold agent-specific command files and provide a structured specification-driven workflow.
-
-- Confirm the coding-agent integration.
-- Review generated files before committing.
-- Decide whether Spec Kit templates replace or extend these templates.
-- Keep the constitution aligned; avoid duplicate authorities.
-- Record the chosen version when repeatable workshop setup matters.
-
-## Stage 2 — Superpowers
-Use the [official Superpowers README](https://github.com/obra/superpowers) to install it for the chosen coding-agent harness. It adds reusable skills for design, planning, implementation, testing, review, debugging, and branch completion.
-
-- Keep domain requirements, privacy rules, and tool permissions here.
-- Avoid copying upstream skill files.
-- Add a project-specific skill only for a recurring workflow with clear inputs, outputs, and verification.
-- Test the workflow on a low-risk feature first.
-
-## Layering rule
-- **This repository:** project intent, architecture, data rules, acceptance criteria.
-- **Spec Kit:** repeatable specification and implementation artifacts.
-- **Superpowers:** reusable agent skills and development workflow.
-- **Human maintainers:** scope approval, sensitive access, public release, and consequential decisions.
+The Superpowers PRD should be authored only after the Agentic RAG starter has been applied and its CI/API gates have passed.
