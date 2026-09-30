@@ -85,7 +85,8 @@ numpy==2.5.3 ; python_full_version >= '3.12'
     #   fastembed
     #   onnxruntime
     #   qdrant-client
-onnxruntime==1.30.0
+onnxruntime==1.30.0 ; sys_platform == "linux"
+onnxruntime==1.23.2 ; sys_platform == "darwin"
     # via fastembed
 openai==1.78.1
     # via workshop-agentic-rag
