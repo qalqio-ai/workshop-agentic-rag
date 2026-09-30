@@ -139,8 +139,9 @@ For Codex CLI, Claude Code, and other supported integrations, invoke the install
 ## Upstream and maintenance record
 
 - Upstream: [obra/superpowers](https://github.com/obra/superpowers)
-- Instructions reviewed: upstream README on 2026-09-30
+- Instructions reviewed: upstream README and release notes on 2026-09-30; latest tagged release shown was `v6.1.1` (`d884ae0`, 2026-07-02)
 - Install model: host-managed plugin/extension; this repository does not vendor upstream skill files
+- Versioning: the plugin marketplace manages the installed version; this guide records the release reviewed, not a pinned dependency
 - Update check: re-read the upstream installation and release notes before changing harness instructions
 - Maintainer: repository maintainers, through pull request review
 - Optional telemetry: upstream documents an optional visual companion that requests its logo and includes the Superpowers version, not project prompts or content. Disable it with `SUPERPOWERS_DISABLE_TELEMETRY=true` if desired.
@@ -152,6 +153,7 @@ Uninstall or disable the plugin from the coding agent's plugin/extension manager
 ## References
 
 - [Superpowers upstream README](https://github.com/obra/superpowers)
+- [Superpowers upstream releases](https://github.com/obra/superpowers/releases)
 - [GitHub Spec Kit quickstart](https://github.github.com/spec-kit/quickstart.html)
 - [GitHub Spec Kit installation guide](https://github.github.com/spec-kit/installation.html)
 - [Superpowers Integration PRD](Superpowers_Integration_PRD.md)
