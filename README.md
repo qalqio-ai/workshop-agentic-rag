@@ -1,6 +1,6 @@
 # QALQIO AI-Native Repo + Agentic RAG Demo
 
-A starter repository for the QALQIO workshop build: establish a small, readable AI-native project foundation, then add spec-driven development and agent workflow tooling as the project grows.
+A local-first, API-first Agentic RAG starter with isolated knowledge profiles, evidence-grounded answers, short-lived session memory, deterministic tests, Docker packaging, and GitHub Actions CI.
 
 ## GitHub description
 
@@ -8,9 +8,9 @@ AI-native repository starter and Agentic RAG workshop demo: reusable project spe
 
 ## Purpose
 
-Demonstrate an AI-native software workflow and a bounded Agentic RAG application. Start with requirements, evidence, and constraints before implementation.
+Demonstrate an AI-native software workflow and a bounded Agentic RAG application. This first implementation provides three isolated use-case profiles, a FastAPI interface, Qdrant local storage, SQLite session memory, an OpenAI Responses API adapter, and a mock mode for offline development.
 
-The RAG scenario, source corpus, runtime, vector store, and deployment target remain open until selected in a reviewed feature specification. Do not treat examples in templates as approved product decisions.
+The service is intended for local workshops and development. It has no authentication and must not be exposed to the public internet as-is. Use fictional or approved public materials only.
 
 ## Starter contents
 
@@ -26,6 +26,11 @@ The RAG scenario, source corpus, runtime, vector store, and deployment target re
 | specs/001-agentic-rag-demo/spec.md | Initial scope and open decisions |
 | .env.example | Configuration names only; no secrets |
 | LICENSE | MIT text with rights-holder placeholder |
+| src/agentic_rag | FastAPI, profile registry, retrieval, memory, and model adapters |
+| tests | API and behavior tests using in-memory Qdrant and mock generation |
+| Dockerfile / compose.yaml | Local container build and run configuration |
+| .github/workflows/ci.yml | Pull request and main-branch CI, including a container API smoke test |
+| sample_data | Fictional documents for the three isolated demo profiles |
 
 ## First steps
 
@@ -67,15 +72,77 @@ Specify memory separately from document retrieval. Do not silently persist user 
 
 ## Local setup
 
-This starter contains documentation and examples; it does not require a runtime or API key.
-
 ~~~bash
 git clone https://github.com/qalqio-ai/workshop-agentic-rag.git
 cd workshop-agentic-rag
-git status
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+pip install --no-deps -e .
+cp .env.example .env
+uvicorn agentic_rag.main:app --reload
 ~~~
 
-Copy .env.example to .env only when an implementation needs configuration. Never commit .env, credentials, private documents, or real user data.
+The default mock model and hash embedder require no API key. Visit http://127.0.0.1:8000/docs for interactive API docs. Set MODEL_PROVIDER=openai and provide OPENAI_API_KEY in .env to use the configured OpenAI Responses API model. The model name defaults to gpt-4.1-mini and can be changed with MODEL_NAME.
+
+### Run tests locally
+
+~~~bash
+./scripts/test.sh
+~~~
+
+The test suite uses a temporary in-memory Qdrant collection and a SQLite file under pytest's temporary directory. It does not call an LLM API.
+
+### Run with Docker Compose
+
+~~~bash
+docker compose up --build -d
+docker compose ps
+python scripts/api_smoke.py
+docker compose down
+~~~
+
+The container defaults to mock mode and persists Qdrant and session data in named Docker volumes. To keep data only for one run, use docker compose down --volumes.
+
+After the API is running, load one synthetic document for each profile with:
+
+~~~bash
+python scripts/seed_samples.py
+~~~
+
+### API request examples
+
+Ingest a document:
+
+~~~bash
+curl -sS http://127.0.0.1:8000/v1/documents \
+  -H 'Content-Type: application/json' \
+  -d '{"use_case_id":"workshop-knowledge","source_id":"quickstart","title":"Quickstart","text":"Start the API with Docker Compose."}'
+~~~
+
+Ask a question:
+
+~~~bash
+curl -sS http://127.0.0.1:8000/v1/query \
+  -H 'Content-Type: application/json' \
+  -d '{"use_case_id":"workshop-knowledge","question":"How do I start the API with Docker?"}'
+~~~
+
+The query response includes an evidence status, citations, session ID, and trace ID. An unsupported question returns an insufficient-evidence response with no citations.
+
+## CI and Docker verification
+
+Pull requests and pushes to main run Python compile, Ruff, and pytest checks, then build the Docker image, start the API container, and perform black-box health, profile, ingestion, query, and citation checks. Run the same Python checks locally with ./scripts/test.sh.
+
+## Runtime boundaries
+
+- Each configured use case has a separate Qdrant collection; requests never search across profiles.
+- Session memory is stored in SQLite, scoped to a session and use case, and expires after the configured TTL.
+- Retrieved documents are untrusted evidence. Instructions in a document cannot replace the system policy.
+- The mock model is the default. The OpenAI adapter is optional and reads its key from the environment.
+- This demonstration has no authentication, rate limiting, tenant management, or production hardening.
+
+Never commit .env, API keys, private corpora, local Qdrant data, SQLite files, or real user data.
 
 ## Public repository checklist
 

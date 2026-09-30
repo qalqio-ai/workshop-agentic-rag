@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  python-and-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install --no-deps -e .
+      - name: Run local CI checks
+        run: ./scripts/test.sh
+      - name: Build Docker image
+        run: docker build --tag workshop-agentic-rag:ci .
+      - name: Run API container and black-box tests
+        run: |
+          docker run --detach --rm --name workshop-agentic-rag-ci \
+            --publish 8000:8000 \
+            --env MODEL_PROVIDER=mock \
+            --env QDRANT_PATH=/tmp/qdrant \
+            --env SESSION_DB_PATH=/tmp/sessions.sqlite3 \
+            workshop-agentic-rag:ci
+          python scripts/api_smoke.py
+      - name: Stop API container
+        if: always()
+        run: docker stop workshop-agentic-rag-ci || true

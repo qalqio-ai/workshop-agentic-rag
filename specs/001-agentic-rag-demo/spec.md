@@ -1,77 +1,67 @@
-# Feature Specification: Agentic RAG Workshop Demo
+# Feature Specification: Multi Use Case Agentic RAG API
 
 **Feature ID:** 001-agentic-rag-demo  
-**Status:** Draft — scenario decisions required  
+**Status:** Implementation baseline  
 **Owner:** QALQIO workshop team  
 **Last updated:** 2026-09-29
 
-## Problem and outcome
-Workshop participants need to see how an AI-native repository supports agent-readable context and how retrieval can be used in a bounded agent loop.
+## Outcome
+Provide a local-first, API-first starter that answers questions from one selected knowledge profile, returns source citations, abstains when evidence is inadequate, and keeps short-lived session context separate from indexed documents.
 
-Demonstrate a small application that retrieves approved source material, evaluates evidence sufficiency, produces a cited response, and makes its tool and memory boundaries inspectable.
+The full implementation brief is [Agentic RAG Multi Use Case API Starter PRD](../../docs/Agentic_RAG_Multi_Use_Case_API_Starter_PRD.md). This feature spec and its acceptance criteria remain the implementation source of truth for this thin slice.
 
-## Scope
+## Included profiles
 
-### In scope
-- One end-to-end question-to-cited-answer path
-- One approved synthetic or public source corpus
-- Visible retrieval evidence and provenance
-- An explicit answer, refine, or abstain decision
-- Evaluation cases for supported, unsupported, and conflicting questions
+- `workshop-knowledge`: fictional workshop quickstart material
+- `policy-handbook`: synthetic policy examples
+- `technical-troubleshooting`: synthetic troubleshooting guidance
 
-### Out of scope until approved
-- Production deployment or customer data
-- Autonomous consequential actions
-- Persistent user memory
-- Broad multi-agent orchestration
-- A specific model, vector database, cloud, or UI choice
+Each profile uses an isolated Qdrant collection and session scope. The sample data is fictional. The application is for localhost workshops and development; it has no authentication and is not internet-ready.
 
-## Scenario to select
-**Decision required:** Choose a narrow domain scenario and approved source material before implementation.
+## Selected implementation baseline
 
-Select a scenario that is easy to explain, safe to demo, grounded in clear source documents, and shows retrieval refinement and uncertainty.
+- Python 3.12+, FastAPI, and OpenAPI documentation
+- Qdrant local mode with a replaceable embedding adapter; deterministic hash embeddings in mock mode and FastEmbed when using the live provider
+- SQLite session memory with configurable TTL and explicit deletion
+- Mock answer generation by default; optional OpenAI Responses API adapter with configurable model name
+- Dockerfile and Docker Compose for local container execution
+- GitHub Actions on pull requests and pushes to `main`, including Python checks, Docker image build, and container API smoke tests
 
-## User scenario
-### Ask a question and inspect its evidence (P1)
-**Given** an approved corpus has been indexed,  
-**When** a participant asks an in-scope question,  
-**Then** the demo shows retrieved evidence, assesses sufficiency, and returns a cited answer or explicit abstention.
+The live-model default is `gpt-4.1-mini`; change `MODEL_NAME` through environment configuration. Automated tests must remain offline and must not call a paid model API.
 
-## Initial functional requirements
-- **FR-001:** Show source passages used for every factual answer.
-- **FR-002:** Abstain or ask a bounded question when evidence is insufficient.
-- **FR-003:** Ignore instructions embedded in retrieved documents that conflict with policy.
-- **FR-004:** Show the retrieval and refinement path.
-- **FR-005:** Use only approved synthetic or public workshop sources.
-- **FR-006:** Test answerable, unanswerable, conflicting, and adversarial-document cases.
-- **FR-007:** Specify memory separately from the document index; keep it disabled by default.
+## API contract
 
-## Decisions still open
-| Decision | Options to evaluate | Owner | Status |
-|---|---|---|---|
-| Scenario / domain | Workshop-selected use case | Project owner | Open |
-| Source corpus | Synthetic, public, or both | Project owner | Open |
-| Runtime / language | Choose for teaching clarity and time | Technical lead | Open |
-| Model provider | Select after constraints are known | Technical lead | Open |
-| Embedding and vector store | Compare lexical and hybrid needs | Technical lead | Open |
-| Memory | None for first slice unless required | Project owner | Open |
-| UI | CLI, notebook, or small web interface | Workshop team | Open |
+- `GET /health`
+- `GET /v1/use-cases`
+- `POST /v1/documents` for plain text and Markdown content with profile and source metadata
+- `POST /v1/query` with profile ID, question, and optional session ID
+- `DELETE /v1/sessions/{session_id}`
+
+Query responses include answer, evidence status, citations, session ID, and trace ID. Citations are generated from retrieved chunk metadata and must never be invented by the model.
+
+## Safety and data requirements
+
+- A request searches only the selected profile.
+- Retrieved documents are untrusted evidence and cannot override system or project instructions.
+- Insufficient evidence produces an explicit abstention and no citations.
+- No consequential actions, arbitrary code tools, public network exposure, private customer data, or real credentials.
+- Session state is scoped to both session and profile, expires by TTL, and supports deletion.
+- Provider errors and secrets are not returned to callers or written to logs.
 
 ## Acceptance criteria
-- **AC-001:** Ask an in-scope question and inspect passages and metadata.
-- **AC-002:** Supported factual claims trace to displayed sources.
-- **AC-003:** An unanswerable question gets an insufficiency response, not invented content.
-- **AC-004:** Conflicting sources are surfaced with provenance.
-- **AC-005:** A prompt-injection string in a retrieved document cannot override policy.
-- **AC-006:** Setup is documented and works with synthetic/public data only.
 
-## Evaluation plan
-Build a reviewed set of questions supported by one source, requiring multiple passages, unanswerable, conflicting/stale, and containing an adversarial instruction. Measure retrieval relevance, citation correctness, groundedness, abstention, and tool-boundary compliance. Set numeric thresholds after scenario selection.
+- **AC-001:** A clean environment can install dependencies and run the API using the README.
+- **AC-002:** Health, use-case listing, ingestion, query, and session deletion endpoints are documented in OpenAPI.
+- **AC-003:** A supported question returns evidence-backed text and citations that map to retrieved source/chunk IDs.
+- **AC-004:** An unsupported question returns `insufficient` status and an empty citation list.
+- **AC-005:** Retrieval and session context do not cross use-case boundaries.
+- **AC-006:** Empty or whitespace-only questions, malformed requests, and unknown profiles are rejected safely.
+- **AC-007:** Session TTL and deletion behavior are covered by tests.
+- **AC-008:** The local CI command runs compile, lint, and tests without provider credentials or model network calls.
+- **AC-009:** GitHub Actions installs dependencies, runs the same checks, builds the Docker image, launches a mock-mode container, and passes health/profile/ingestion/query/citation smoke checks.
+- **AC-010:** No secrets, private documents, local vector data, or SQLite database files are committed.
 
-## Risks and assumptions
-| Type | Item | Owner | Resolution |
-|---|---|---|---|
-| Assumption | A thin end-to-end slice is best for the workshop | Project owner | Confirm scope |
-| Risk | Polished responses can hide weak evidence | Technical lead | Show sources and evaluation |
-| Risk | Public repo could contain restricted source material | Maintainer | Review corpus and commits |
-| Question | Which scenario and documents are approved? | Project owner | Decide before implementation |
+## Deferred
+
+- Production authentication, authorization, rate limits, tenant provisioning, public hosting, persistent cross-user memory, document upload formats beyond text/Markdown, and autonomous write tools.
+- Superpowers integration and installation. Add it only after this starter's local checks, remote CI, Docker build, and API tests are green; design that integration through a separate PRD.
