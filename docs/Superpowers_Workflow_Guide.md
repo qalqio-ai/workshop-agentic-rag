@@ -66,7 +66,18 @@ In the agent conversation, use the Spec Kit commands installed for that harness,
 2. Generate `plan.md` with the repository's Python, FastAPI, Qdrant, and mock-mode constraints.
 3. Generate `tasks.md` and run Spec Kit's cross-artifact analysis.
 4. Review the spec, plan, tasks, and acceptance criteria yourself before implementation.
-5. Ask the agent to execute the approved Spec Kit tasks using Superpowers test-driven development. Require a failing test before each behavior change, the smallest implementation that makes it pass, and a focused review against the acceptance criteria.
+5. Ask the agent to execute the approved Spec Kit tasks using Superpowers `executing-plans` and `test-driven-development`. Require a failing test before each behavior change, the smallest implementation that makes it pass, and a focused review against the acceptance criteria. Do not invoke Superpowers `writing-plans` for this feature because the reviewed Spec Kit plan and tasks already own that work.
+
+With the current Spec Kit skills-mode naming, the conversation commands are:
+
+```text
+/speckit-clarify
+/speckit-plan Use the repository's existing Python, FastAPI, Qdrant, mock-mode, and offline-test architecture.
+/speckit-tasks
+/speckit-analyze
+```
+
+Run one at a time and inspect each artifact. If your installed integration uses a different generated spelling (for example a dotted command name), use that local equivalent. These are typed in the coding agent's conversation, not in Terminal.
 
 Suggested instruction to the agent:
 
