@@ -83,3 +83,10 @@ def query(body: QueryIn, request: Request):
 def delete_session(session_id: str, request: Request):
     request.app.state.memory.delete(session_id)
     return {"status": "deleted", "session_id": session_id}
+
+@app.get("/v1/use-cases/{use_case_id}")
+def get_use_case(use_case_id: str):
+    item = USE_CASES.get(use_case_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail={"code": "unknown_use_case"})
+    return {"id": item.id, "name": item.name, "description": item.description}

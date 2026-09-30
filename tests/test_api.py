@@ -111,3 +111,16 @@ def test_session_memory_expires(tmp_path, monkeypatch):
     assert memory.get("s1", "workshop-knowledge") == "context"
     clock[0] += 6
     assert memory.get("s1", "workshop-knowledge") is None
+
+def test_get_use_case_detail(client):
+    response = client.get("/v1/use-cases/workshop-knowledge")
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": "workshop-knowledge",
+        "name": "Workshop knowledge assistant",
+        "description": "Answers from the workshop guide corpus.",
+    }
+
+    missing = client.get("/v1/use-cases/not-configured")
+    assert missing.status_code == 404
+    assert missing.json()["detail"]["code"] == "unknown_use_case"
