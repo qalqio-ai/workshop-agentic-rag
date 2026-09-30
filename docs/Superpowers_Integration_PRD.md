@@ -1,7 +1,7 @@
 # PRD: Superpowers Workflow Integration
 
-**Status:** Draft for review  
-**Date:** 2026-09-29  
+**Status:** Accepted for workflow-guide implementation; PR #4 is open for review  
+**Date:** 2026-09-30  
 **Target repository:** `qalqio-ai/workshop-agentic-rag`  
 **Prerequisite:** The Agentic RAG starter and its CI/Docker verification are accepted and merged.
 
@@ -15,7 +15,7 @@ The intended result is a clear path through the repository's requirements and im
 
 This repository provides an AI-native starter pack, Spec Kit-oriented specification files, and a multi-use-case Agentic RAG API. The API's acceptance criteria and CI checks remain the source of truth for product behavior. Superpowers is an upstream collection of agent skills and workflow instructions whose integrations and installation steps differ by coding-agent harness.
 
-The current upstream README describes a skill workflow that includes brainstorming, worktree setup, planning, plan execution or subagent-driven development, test-driven development, code review, and branch completion. It documents separate integrations for Codex CLI, Claude Code, and Gemini CLI. These details must be rechecked against the upstream project when implementation begins.
+The upstream skill workflow includes brainstorming, worktree setup, planning, plan execution or subagent-driven development, test-driven development, code review, and branch completion. The README and release notes currently disagree about Gemini CLI: the README lists it, while release v6.1.0 says Gemini CLI support was removed after Google's end-of-life announcement. The implementation guide therefore documents Codex CLI and Claude Code and labels Gemini as unverified. The latest tagged release reviewed is v6.1.1 (`d884ae0`, 2026-07-02).
 
 ## 3. Problem statement
 
@@ -25,7 +25,7 @@ The repository has project-specific requirements and a structured specification 
 
 - Define how the Constitution, PRD/spec, plan, tasks, and CI acceptance criteria feed the Superpowers workflow.
 - Keep project policies and product requirements in this repository; use upstream Superpowers for its maintained, general-purpose workflow skills.
-- Document harness-specific setup for Codex CLI, Claude Code, and Gemini CLI, based on upstream documentation current at implementation time.
+- Document verified harness-specific setup for Codex CLI and Claude Code, and record the unresolved Gemini CLI status without presenting it as supported.
 - Provide an onboarding walkthrough that starts from an approved feature spec and ends with verified changes ready for a pull request.
 - Make installation an explicit, separately reviewed implementation step.
 
@@ -39,7 +39,7 @@ The repository has project-specific requirements and a structured specification 
 
 ## 6. Users and primary scenario
 
-**Primary user:** A developer using Codex CLI, Claude Code, or Gemini CLI who wants to implement a feature in the Agentic RAG starter with explicit requirements, tests, and review.
+**Primary user:** A developer using Codex CLI or Claude Code who wants to implement a feature in the Agentic RAG starter with explicit requirements, tests, and review.
 
 **Scenario:** The developer chooses or drafts a feature in `specs/`, checks it against the Constitution and PRD, uses the agreed design/planning workflow, implements against acceptance criteria, runs the existing local CI and API smoke checks, and presents a branch or pull request with evidence of verification.
 
@@ -58,7 +58,7 @@ The implementation must identify overlapping command or skill behavior before ac
 ## 8. Functional requirements
 
 1. **Workflow map:** Document a table mapping each project artifact and Spec Kit phase to the relevant Superpowers workflow phase or skill, including phases that have no direct mapping.
-2. **Harness setup guide:** Provide separately verified setup instructions for Codex CLI, Claude Code, and Gemini CLI. State prerequisites and the exact upstream instructions consulted. Do not run installation commands as part of authoring this PRD.
+2. **Harness setup guide:** Provide separately verified setup instructions for Codex CLI and Claude Code. Record the Gemini CLI README/release-note conflict and do not recommend it as a supported path until upstream resolves that conflict. State prerequisites and the upstream sources consulted. Do not run installation commands as part of authoring this PRD.
 3. **Conflict handling:** Explain how to resolve overlapping instructions, especially spec approval versus brainstorming approval, task breakdown versus plan writing, and implementation via Spec Kit commands versus Superpowers plan execution.
 4. **Demo walkthrough:** Provide a small change scenario in mock mode that shows the workflow from accepted feature spec through tests and pull request readiness.
 5. **Verification gates:** Require the existing Python test script and Docker/API CI job before describing a change as complete. A workflow-only addition must not weaken or bypass those checks.
@@ -81,7 +81,7 @@ The implementation must identify overlapping command or skill behavior before ac
 
 - The Agentic RAG API defaults to mock mode; the walkthrough must not require an API key or external LLM service.
 - The demo repository has no authentication and must not be exposed publicly as a production service.
-- Agent harness plugin systems change over time. Current commands in this document are intentionally omitted; implementation must use the upstream instructions current on that date.
+- Agent harness plugin systems change over time. Commands and upstream review dates belong in `Superpowers_Workflow_Guide.md` and must be rechecked before they are changed.
 - The project expects a pull request review and passing GitHub Actions before merging.
 - This PRD assumes GitHub Spec Kit artifacts are present in the accepted starter baseline; it does not install or initialize Spec Kit.
 
@@ -104,7 +104,7 @@ The implementation must identify overlapping command or skill behavior before ac
 
 ## 13. References
 
-- [Superpowers upstream repository and current README](https://github.com/obra/superpowers) — consulted 2026-09-29.
+- [Superpowers upstream repository and README](https://github.com/obra/superpowers) and [release notes](https://github.com/obra/superpowers/releases) — rechecked 2026-09-30; README/release notes conflict on Gemini CLI.
 - [GitHub Spec Kit](https://github.com/github/spec-kit).
 - [Agentic RAG starter PRD](Agentic_RAG_Multi_Use_Case_API_Starter_PRD.md).
 - [Repository evolution path](evolution-path.md).

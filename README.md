@@ -58,6 +58,8 @@ When the team wants reusable agent skills for design, planning, implementation, 
 
 Treat Superpowers as the workflow layer. Keep QALQIO domain rules, privacy constraints, architecture decisions, tool permissions, and acceptance criteria in this repository. Extend the workflow only for recurring needs; do not copy upstream skills without a maintenance reason.
 
+See the [Spec Kit + Superpowers workflow guide](docs/Superpowers_Workflow_Guide.md) for the ownership map, per-agent setup notes, and a sample feature to take through prep, build, test, and ship. The sample spec is not implemented yet.
+
 ## RAG evidence path
 
 1. A user asks a question.
