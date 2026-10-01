@@ -10,6 +10,9 @@ Desktop.ini
 *.swo
 *~
 
+# Per-task isolated worktrees
+.worktrees/
+
 # Local configuration and secrets
 .env
 .env.*
