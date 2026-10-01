@@ -42,6 +42,34 @@ def test_health_profiles_and_openapi(client):
     assert client.get("/openapi.json").status_code == 200
 
 
+def test_ready_reports_available_store_without_using_query_paths(client, monkeypatch):
+    store = client.app.state.store
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("readiness must not use query or mutation paths")
+
+    monkeypatch.setattr(main, "get_model", forbidden)
+    monkeypatch.setattr(store, "add", forbidden)
+    monkeypatch.setattr(store, "search", forbidden)
+    monkeypatch.setattr(store.embedder, "embed", forbidden)
+    monkeypatch.setattr(client.app.state.memory, "get", forbidden)
+    monkeypatch.setattr(client.app.state.memory, "put", forbidden)
+
+    response = client.get("/ready")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ready"}
+
+
+def test_ready_reports_unavailable_store_without_error_details(client, monkeypatch):
+    monkeypatch.setattr(client.app.state.store, "is_available", lambda: False)
+
+    response = client.get("/ready")
+
+    assert response.status_code == 503
+    assert response.json() == {"status": "not_ready"}
+
+
 def test_ingest_and_grounded_query_return_valid_citation(client):
     assert ingest(client).status_code == 200
     result = client.post(

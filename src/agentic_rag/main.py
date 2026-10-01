@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from uuid import uuid4
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 
 from .agent import get_model
 from .config import settings
@@ -30,6 +31,13 @@ app = FastAPI(
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/ready")
+def ready(request: Request):
+    if request.app.state.store.is_available():
+        return {"status": "ready"}
+    return JSONResponse(status_code=503, content={"status": "not_ready"})
 
 
 @app.get("/v1/use-cases")
