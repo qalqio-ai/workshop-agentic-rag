@@ -15,7 +15,7 @@ This guide applies the Superpowers workflow to this repository while keeping the
 
 Spec Kit owns the feature spec, plan, and tasks. Do not create a second Superpowers plan for the same feature. After the Spec Kit tasks are reviewed and approved, use Superpowers' test-driven development and plan-execution practices to implement those tasks. Use Superpowers for brainstorming before the scope is approved, systematic debugging when a check fails, code review, and branch completion.
 
-Superpowers skills are usually discovered and invoked automatically by the coding agent. They are not universal terminal commands. Spec Kit commands are also agent skills rather than shell commands; their exact spelling depends on the installed agent integration. The current Spec Kit docs show `/speckit-*` in skills mode, while some integrations expose another form. Use the commands created for this repo and agent.
+Superpowers skills are usually discovered and invoked automatically by the coding agent. They are not universal terminal commands. Spec Kit commands are also agent skills rather than shell commands, and their spelling depends on the integration: Codex CLI uses `$speckit-*`; slash-command integrations use `/speckit-*`. Use the command form created for this repo and agent.
 
 ## Install Superpowers in your coding agent
 
@@ -68,16 +68,16 @@ In the agent conversation, use the Spec Kit commands installed for that harness,
 4. Review the spec, plan, tasks, and acceptance criteria yourself before implementation.
 5. Ask the agent to execute the approved Spec Kit tasks using Superpowers `executing-plans` and `test-driven-development`. Require a failing test before each behavior change, the smallest implementation that makes it pass, and a focused review against the acceptance criteria. Do not invoke Superpowers `writing-plans` for this feature because the reviewed Spec Kit plan and tasks already own that work.
 
-With the current Spec Kit skills-mode naming, the conversation commands are:
+For **Codex CLI**, enter these in the agent conversation, one at a time:
 
 ```text
-/speckit-clarify
-/speckit-plan Use the repository's existing Python, FastAPI, Qdrant, mock-mode, and offline-test architecture.
-/speckit-tasks
-/speckit-analyze
+$speckit-clarify
+$speckit-plan Use the repository's existing Python, FastAPI, Qdrant, mock-mode, and offline-test architecture.
+$speckit-tasks
+$speckit-analyze
 ```
 
-Run one at a time and inspect each artifact. If your installed integration uses a different generated spelling (for example a dotted command name), use that local equivalent. These are typed in the coding agent's conversation, not in Terminal.
+Run one at a time and inspect each artifact. Other integrations may use `/speckit-clarify` or another generated spelling. These are typed in the coding agent's conversation, not in Terminal.
 
 Suggested instruction to the agent:
 
@@ -134,7 +134,7 @@ specify version
 specify self check
 ```
 
-For Codex CLI, Claude Code, and other supported integrations, invoke the installed command or skill that corresponds to **clarify**, **plan**, **tasks**, and **analyze**. Review each artifact before moving forward. Do not run a second planning system over the same feature.
+For Codex CLI, invoke the installed `$speckit-*` skills. For Claude Code and other supported integrations, invoke their generated command or skill form for **clarify**, **plan**, **tasks**, and **analyze**. Review each artifact before moving forward. Do not run a second planning system over the same feature.
 
 ## Upstream and maintenance record
 
@@ -156,4 +156,5 @@ Uninstall or disable the plugin from the coding agent's plugin/extension manager
 - [Superpowers upstream releases](https://github.com/obra/superpowers/releases)
 - [GitHub Spec Kit quickstart](https://github.github.com/spec-kit/quickstart.html)
 - [GitHub Spec Kit installation guide](https://github.github.com/spec-kit/installation.html)
+- [GitHub Spec Kit integration and invocation reference](https://github.github.com/spec-kit/reference/integrations.html)
 - [Superpowers Integration PRD](Superpowers_Integration_PRD.md)
