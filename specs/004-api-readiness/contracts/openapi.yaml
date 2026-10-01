@@ -1,0 +1,52 @@
+openapi: 3.0.3
+info:
+  title: API Readiness Probe Contract
+  version: 1.0.0
+paths:
+  /ready:
+    get:
+      summary: Report vector-store readiness
+      responses:
+        '200':
+          description: The API can access its vector store.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadyStatus'
+        '503':
+          description: The API cannot access or check its vector store.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotReadyStatus'
+  /health:
+    get:
+      summary: Report API liveness
+      responses:
+        '200':
+          description: Existing unchanged liveness response.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    enum: [ok]
+components:
+  schemas:
+    ReadyStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [ready]
+    NotReadyStatus:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [not_ready]
