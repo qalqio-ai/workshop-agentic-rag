@@ -30,6 +30,9 @@ for _attempt in range(40):
 else:
     raise SystemExit("API container did not become healthy within 40 seconds")
 
+status, readiness = request("/ready")
+assert status == 200 and readiness.get("status") == "ready"
+
 status, profiles = request("/v1/use-cases")
 assert status == 200 and len(profiles) == 3
 request(
@@ -49,4 +52,4 @@ status, answer = request(
     },
 )
 assert status == 200 and answer["evidence_status"] == "grounded" and answer["citations"]
-print("Docker API smoke checks passed: health, profiles, ingestion, grounded query, citation.")
+print("Docker API smoke checks passed: health, readiness, profiles, ingestion, grounded query, citation.")
