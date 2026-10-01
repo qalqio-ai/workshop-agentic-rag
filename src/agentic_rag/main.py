@@ -33,7 +33,7 @@ def health():
     return {"status": "ok"}
 
 
-@app.get("/ready")
+@app.get("/ready", responses={503: {"description": "Vector store is unavailable"}})
 def ready(request: Request):
     if request.app.state.store.is_available():
         return {"status": "ready"}
