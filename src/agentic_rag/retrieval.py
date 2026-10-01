@@ -50,6 +50,13 @@ class ProfileStore:
     def _collection(self, use_case_id: str) -> str:
         return "profile_" + use_case_id.replace("-", "_")
 
+    def is_available(self) -> bool:
+        try:
+            self.client.get_collections()
+        except Exception:
+            return False
+        return True
+
     def add(self, use_case_id: str, source_id: str, title: str, text: str) -> str:
         collection = self._collection(use_case_id)
         if not self.client.collection_exists(collection):
