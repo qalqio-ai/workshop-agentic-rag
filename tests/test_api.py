@@ -76,6 +76,18 @@ def test_openapi_publishes_ready_contract(client):
     assert set(responses) == {"200", "503"}
 
 
+def test_health_is_independent_of_vector_store_readiness(client, monkeypatch):
+    def readiness_must_not_run():
+        raise AssertionError("health must not check vector-store readiness")
+
+    monkeypatch.setattr(client.app.state.store, "is_available", readiness_must_not_run)
+
+    response = client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
 def test_ingest_and_grounded_query_return_valid_citation(client):
     assert ingest(client).status_code == 200
     result = client.post(
