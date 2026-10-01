@@ -70,6 +70,12 @@ def test_ready_reports_unavailable_store_without_error_details(client, monkeypat
     assert response.json() == {"status": "not_ready"}
 
 
+def test_openapi_publishes_ready_contract(client):
+    responses = client.get("/openapi.json").json()["paths"]["/ready"]["get"]["responses"]
+
+    assert set(responses) == {"200", "503"}
+
+
 def test_ingest_and_grounded_query_return_valid_citation(client):
     assert ingest(client).status_code == 200
     result = client.post(
